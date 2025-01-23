@@ -3,12 +3,9 @@
 import argparse
 import OpenSSL
 import re
-import subprocess
 import sys
 
 from datetime import datetime, timedelta
-
-LIMIT_BEFORE_WARNING_DAYS: int = 7
 
 def get_args() -> argparse.Namespace:
     _prog: str = "OpenVPN Expiration Checker"
@@ -33,9 +30,6 @@ def read_profile(path: str) -> str:
     except Exception as e:
         raise Exception(f"An unexpected error occurred while reading '{path}': {e}")
 
-def check_certificate_expiry() -> bool:
-    raise NotImplementedError
-
 def main() -> None:
     args = get_args()
 
@@ -52,12 +46,7 @@ def main() -> None:
     expiration_date_from_cert: str = x509.get_notAfter().decode("utf-8")
     expiration_timestamp: datetime = datetime.strptime(expiration_date_from_cert, "%Y%m%d%H%M%SZ")
     time_delta: timedelta = expiration_timestamp - datetime.now()
+    print(f"[INFO] VPN certificate expires on {expiration_timestamp.strftime('%d/%m/%Y at %H:%M:%S')} in {time_delta.days} days")
 
-    if time_delta.days < LIMIT_BEFORE_WARNING_DAYS:
-        subprocess.run(["notify-send", "VPN Certificate Expiration", f"On {expiration_timestamp.strftime('%d/%m/%Y')} (in {time_delta.days} days)"])
-        print(f"[INFO] VPN certificate expires on {expiration_timestamp.strftime('%d/%m/%Y at %H:%M:%S')} in {time_delta.days} days")
-    else:
-        print(f"[INFO] VPN certificate Expires on {expiration_timestamp.strftime('%d/%m/%Y at %H:%M:%S')} in {time_delta.days} days")
-    
 if __name__ == "__main__":
     main()
