@@ -15,7 +15,7 @@ A Python script to check the expiration date of an OpenVPN profile's certificate
 ## Usage
 Run the script with the path to your OpenVPN profile:
 ```bash
-python3 vpn_expiration_checker.py /path/to/your.ovpn
+python3 ovpn-check.py /path/to/your.ovpn
 ```
 
 If the certificate is nearing expiration (within 7 days by default), the script will:
